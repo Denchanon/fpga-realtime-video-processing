@@ -1,7 +1,14 @@
 //============================================================================
 // Module: ov7670_capture
-// Description: OV7670 Pixel Capture — based on proven working reference design.
-//              Uses shift-register data latching and wr_hold pipeline.
+// Description: OV7670 Pixel Capture - RGB565 to RGB444
+//
+// OV7670 ส่ง RGB565 เป็น 2 bytes ต่อ pixel ทาง PCLK:
+//   PCLK1 → Byte1 = [R4 R3 R2 R1 R0 G5 G4 G3]
+//   PCLK2 → Byte2 = [G2 G1 G0 B4 B3 B2 B1 B0]
+//
+// ใช้ byte_sel toggle แทน wr_hold pipeline
+// byte_sel=0 → รับ Byte1, byte_sel=1 → รับ Byte2 แล้ว write
+// Reset byte_sel ทุก href rising edge เพื่อให้ phase ถูกเสมอ
 //============================================================================
 
 module ov7670_capture (
@@ -14,11 +21,11 @@ module ov7670_capture (
     output reg         we
 );
 
-    reg [15:0] d_latch;
+    reg [7:0]  byte1;       // เก็บ Byte1 ไว้รอ
+    reg        byte_sel;    // 0=รอ Byte1, 1=รอ Byte2
+    reg        href_prev;
     reg [11:0] dout_reg;
-    reg [1:0]  wr_hold;
 
-    // X/Y coordinates
     reg [9:0] x;
     reg [9:0] y;
 
@@ -27,39 +34,48 @@ module ov7670_capture (
 
     always @(posedge pclk) begin
         if (vsync) begin
-            // During VSYNC high: continuously reset (level-sensitive, NOT edge)
-            x       <= 0;
-            y       <= 0;
-            wr_hold <= 0;
-            we      <= 0;
+            x         <= 0;
+            y         <= 0;
+            we        <= 0;
+            byte_sel  <= 0;
+            href_prev <= 0;
+            byte1     <= 0;
         end else begin
-            // Shift in data bytes (always, every PCLK)
-            d_latch <= {d_latch[7:0], d};
+            href_prev <= href;
+            we        <= 0;  // default: no write
 
-            // wr_hold is a 2-stage pipeline that toggles every other clock
-            // when href is high, creating a write pulse every 2 PCLKs
-            wr_hold <= {wr_hold[0], (href && !wr_hold[0])};
+            // Reset phase ทุก href rising edge
+            if (href && !href_prev)
+                byte_sel <= 0;
 
-            // Write enable is delayed by 1 cycle from wr_hold[1]
-            we <= wr_hold[1];
-
-            if (wr_hold[1]) begin
-                // RGB565 → RGB444 (extract top 4 bits of each channel)
-                dout_reg <= {
-                    d_latch[15:12],   // R[4:1]
-                    d_latch[10:7],    // G[5:2]
-                    d_latch[4:1]      // B[4:1]
-                };
-
-                // Increment position (row-major order)
-                if (x < 319) begin
-                    x <= x + 1;
+            if (href) begin
+                if (byte_sel == 0) begin
+                    // รับ Byte1: [R4 R3 R2 R1 R0 G5 G4 G3]
+                    byte1    <= d;
+                    byte_sel <= 1;
                 end else begin
-                    x <= 0;
-                    if (y < 239)
-                        y <= y + 1;
-                    else
-                        y <= 0;
+                    // รับ Byte2: [G2 G1 G0 B4 B3 B2 B1 B0]
+                    // แปลง RGB565 → RGB444: เอา 4 bits บนของแต่ละ channel
+                    // RGB565: R[4:0]=byte1[7:3], G[5:0]={byte1[2:0],d[7:5]}, B[4:0]=d[4:0]
+                    // RGB444: R[3:0]=R[4:1]=byte1[7:4], G[3:0]=G[5:2]={byte1[2:0],d[7]}, B[3:0]=B[4:1]=d[4:1]
+                    dout_reg <= {
+                        byte1[7:4],          // R[4:1] → R444 upper 4 bits
+                        byte1[2:0], d[7],    // G[5:2] → G444 upper 4 bits
+                        d[4:1]               // B[4:1] → B444 upper 4 bits
+                    };
+                    we       <= 1;
+                    byte_sel <= 0;
+
+                    // Increment position
+                    if (x < 319) begin
+                        x <= x + 1;
+                    end else begin
+                        x <= 0;
+                        if (y < 239)
+                            y <= y + 1;
+                        else
+                            y <= 0;
+                    end
                 end
             end
         end

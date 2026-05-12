@@ -156,8 +156,8 @@ module ov7670_init (
                 7'd67: get_reg_entry = {8'h6D, 8'h55}; // AWBCTR2
                 7'd68: get_reg_entry = {8'h6E, 8'h11}; // AWBCTR1
                 7'd69: get_reg_entry = {8'h6F, 8'h9F}; // AWBCTR0
-                7'd70: get_reg_entry = {8'h01, 8'h96}; // BLUE gain (Boosted to combat green tint)
-                7'd71: get_reg_entry = {8'h02, 8'h8C}; // RED gain (Boosted to combat green tint)
+                7'd70: get_reg_entry = {8'h01, 8'h40}; // BLUE gain (default balanced)
+                7'd71: get_reg_entry = {8'h02, 8'h40}; // RED gain  (default balanced)
 
                 default: get_reg_entry = {8'hFF, 8'hFF}; // End marker
             endcase
@@ -182,7 +182,7 @@ module ov7670_init (
 
             case (state)
                 //------------------------------------------------------------
-                // Assert hardware reset — cam_rst_out = 0 (active low)
+                // Assert hardware reset - cam_rst_out = 0 (active low)
                 //------------------------------------------------------------
                 ST_RESET_ASSERT: begin
                     cam_rst_out <= 1'b0;    // Hold camera in reset
@@ -202,7 +202,7 @@ module ov7670_init (
                 end
 
                 //------------------------------------------------------------
-                // Release hardware reset — cam_rst_out = 1
+                // Release hardware reset - cam_rst_out = 1
                 //------------------------------------------------------------
                 ST_RESET_RELEASE: begin
                     cam_rst_out <= 1'b1;    // Release camera from reset

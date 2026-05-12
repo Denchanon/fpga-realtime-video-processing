@@ -192,7 +192,7 @@ module sccb_master (
                 end
 
                 //------------------------------------------------------------
-                // DONTCARE1: 9th bit — release SDA, clock once
+                // DONTCARE1: 9th bit - release SDA, clock once
                 //------------------------------------------------------------
                 ST_DONTCARE1: begin
                     clk_count <= clk_count + 10'd1;
@@ -237,7 +237,7 @@ module sccb_master (
                 end
 
                 //------------------------------------------------------------
-                // DONTCARE2: 9th bit — release SDA, clock once
+                // DONTCARE2: 9th bit - release SDA, clock once
                 //------------------------------------------------------------
                 ST_DONTCARE2: begin
                     clk_count <= clk_count + 10'd1;
@@ -282,7 +282,7 @@ module sccb_master (
                 end
 
                 //------------------------------------------------------------
-                // DONTCARE3: 9th bit — release SDA, clock once, then STOP
+                // DONTCARE3: 9th bit - release SDA, clock once, then STOP
                 //------------------------------------------------------------
                 ST_DONTCARE3: begin
                     clk_count <= clk_count + 10'd1;
@@ -304,9 +304,9 @@ module sccb_master (
                 //------------------------------------------------------------
                 // STOP: Generate stop condition
                 // SDA goes high while SCL is high
-                // Phase 0: SCL low, SDA low — wait
-                // Phase 1: SCL high, SDA low — wait
-                // Phase 2: SCL high, SDA high — stop condition generated
+                // Phase 0: SCL low, SDA low - wait
+                // Phase 1: SCL high, SDA low - wait
+                // Phase 2: SCL high, SDA high - stop condition generated
                 //------------------------------------------------------------
                 ST_STOP: begin
                     clk_count <= clk_count + 10'd1;

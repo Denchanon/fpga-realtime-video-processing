@@ -13,7 +13,7 @@
 // Input format:  RGB444 = {R[3:0], G[3:0], B[3:0]}
 // Output format: RGB444 = {R[3:0], G[3:0], B[3:0]}
 //
-// This module is purely combinational — no clock, no registers.
+// This module is purely combinational - no clock, no registers.
 //============================================================================
 
 module image_filter #(
@@ -41,11 +41,11 @@ module image_filter #(
     wire [3:0] luma = luma_full[7:4]; // Divide by 16 (>> 4)
 
     //------------------------------------------------------------------------
-    // Filter selection — purely combinational
+    // Filter selection - purely combinational
     //------------------------------------------------------------------------
     always @(*) begin
         case (sw)
-            // Mode 000: Raw pass-through — no processing
+            // Mode 000: Raw pass-through - no processing
             3'b000: begin
                 pixel_out = pixel_in;
             end

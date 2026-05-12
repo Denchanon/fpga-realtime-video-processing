@@ -31,7 +31,7 @@ module top (
 );
 
     //------------------------------------------------------------------------
-    // Internal wires — Clock domain
+    // Internal wires - Clock domain
     //------------------------------------------------------------------------
     wire clk_25mhz;
     wire clk_24mhz;
@@ -66,7 +66,7 @@ module top (
     end
 
     //------------------------------------------------------------------------
-    // Internal wires — SCCB
+    // Internal wires - SCCB
     //------------------------------------------------------------------------
     wire       sccb_start;
     wire [7:0] sccb_addr;
@@ -98,27 +98,33 @@ module top (
     //------------------------------------------------------------------------
     // Camera control outputs
     //------------------------------------------------------------------------
-    assign cam_xclk = clk_25mhz;            // Drive 25MHz XCLK (reference uses 25MHz, not 24MHz)
+    assign cam_xclk = clk_24mhz;            // Drive 24MHz XCLK to OV7670
     assign cam_pwdn = 1'b0;
-    assign cam_rst  = 1'b1;                  // Always not-in-reset (reference: assign reset = 1)
+    assign cam_rst  = cam_rst_from_init;     // Controlled by ov7670_init sequencer (active low)
     assign cam_scl  = sccb_scl;
 
     //------------------------------------------------------------------------
-    // VGA sync delay: 2 cycles to match display pipeline latency
+    // VGA sync delay: 2 cycles to match vga_display pipeline
+    //
+    // vga_display pipeline (verified cycle-accurate):
+    //   Cycle 0: hcount (reg) -> rd_addr (wire) -> BRAM latches addr
+    //   Cycle 1: BRAM outputs rd_data; hactive_d1 = hactive
+    //   Cycle 2: filter(rd_data) -> output reg, gated by hactive_d2
+    //            → vga_r/g/b valid
+    //
+    // hsync/vsync from vga_sync are wires driven by hcount/vcount regs,
+    // so they are aligned with cycle 0. Delay 2 cycles to align with
+    // cycle 2 pixel output.
     //------------------------------------------------------------------------
     reg hsync_d1, vsync_d1;
     reg hsync_d2, vsync_d2;
     always @(posedge clk_25mhz) begin
         if (rst_25_sync) begin
-            hsync_d1 <= 1'b1;
-            vsync_d1 <= 1'b1;
-            hsync_d2 <= 1'b1;
-            vsync_d2 <= 1'b1;
+            hsync_d1 <= 1'b1; vsync_d1 <= 1'b1;
+            hsync_d2 <= 1'b1; vsync_d2 <= 1'b1;
         end else begin
-            hsync_d1 <= hsync_wire;
-            vsync_d1 <= vsync_wire;
-            hsync_d2 <= hsync_d1;
-            vsync_d2 <= vsync_d1;
+            hsync_d1 <= hsync_wire; vsync_d1 <= vsync_wire;
+            hsync_d2 <= hsync_d1;   vsync_d2 <= vsync_d1;
         end
     end
     assign vga_hsync = hsync_d2;

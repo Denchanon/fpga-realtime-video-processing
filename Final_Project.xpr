@@ -4,7 +4,7 @@
 <!-- Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.                   -->
 <!-- Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.   -->
 
-<Project Product="Vivado" Version="7" Minor="71" Path="E:/HWLab/HWSYN_FinalProject/Final_Project.xpr">
+<Project Product="Vivado" Version="7" Minor="71" Path="C:/Users/denchanon/Desktop/hardware/boss2/HWLabFinalProject/Final_Project.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="6ca2166cb68d421e9c6ade8d75591c6e"/>
