@@ -26,7 +26,7 @@ module top (
     output wire [3:0]  vga_g,        // VGA green channel [3:0]
     output wire [3:0]  vga_b,        // VGA blue channel [3:0]
     // User controls
-    input  wire [1:0]  sw,           // Filter selection
+    input  wire [2:0]  sw,           // Filter selection
     output wire [3:0]  led           // Hardware Debugging LEDs
 );
 

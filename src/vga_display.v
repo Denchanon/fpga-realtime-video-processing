@@ -16,7 +16,7 @@ module vga_display (
     input  wire        hactive,   // Horizontal active region
     input  wire        vactive,   // Vertical active region
     // Filter select
-    input  wire [1:0]  sw,        // SW[1:0] for filter mode
+    input  wire [2:0]  sw,        // SW[2:0] for filter mode
     // Single-bank Frame buffer read port
     output wire [16:0] rd_addr,   // Read address
     input  wire [11:0] rd_data,   // Read data (RGB444)

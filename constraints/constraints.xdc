@@ -90,6 +90,7 @@ set_property IOSTANDARD LVCMOS33 [get_ports vga_vsync]
 # === Slide Switches (Filter Select) ===
 set_property PACKAGE_PIN V17 [get_ports {sw[0]}]
 set_property PACKAGE_PIN V16 [get_ports {sw[1]}]
+set_property PACKAGE_PIN W16 [get_ports {sw[2]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {sw[*]}]
 
 # === LEDs (Hardware Debugging) ===

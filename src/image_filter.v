@@ -1,11 +1,14 @@
 //============================================================================
 // Module: image_filter
 // Description: Real-time combinational image filter module.
-//              Selects between 4 modes via sw[1:0]:
-//                00 - Raw pass-through (no filter)
-//                01 - Color Inversion (Negative)
-//                10 - Red Channel Isolation
-//                11 - Thresholding (Binary Black & White)
+//              Selects between 8 modes via sw[2:0]:
+//                000 - Raw pass-through (no filter)
+//                001 - Color Inversion (Negative)
+//                010 - Red Channel Isolation
+//                011 - Green Channel Isolation
+//                100 - Blue Channel Isolation
+//                101 - Grayscale conversion
+//                110 - Thresholding (Binary Black & White)
 //
 // Input format:  RGB444 = {R[3:0], G[3:0], B[3:0]}
 // Output format: RGB444 = {R[3:0], G[3:0], B[3:0]}
@@ -17,7 +20,7 @@ module image_filter #(
     parameter [3:0] THRESHOLD = 4'h8  // Luminance threshold for B&W filter (tunable)
 ) (
     input  wire [11:0] pixel_in,   // Input pixel: {R[3:0], G[3:0], B[3:0]}
-    input  wire [1:0]  sw,         // Filter select switches
+    input  wire [2:0]  sw,         // Filter select switches
     output reg  [11:0] pixel_out   // Output pixel: {R[3:0], G[3:0], B[3:0]}
 );
 
@@ -42,34 +45,52 @@ module image_filter #(
     //------------------------------------------------------------------------
     always @(*) begin
         case (sw)
-            // Mode 00: Raw pass-through — no processing
-            2'b00: begin
+            // Mode 000: Raw pass-through — no processing
+            3'b000: begin
                 pixel_out = pixel_in;
             end
 
-            // Mode 01: Color Inversion (Negative)
+            // Mode 001: Color Inversion (Negative)
             // Each channel is inverted: out = 0xF - in
-            2'b01: begin
+            3'b001: begin
                 pixel_out = {4'hF - r_in, 4'hF - g_in, 4'hF - b_in};
             end
 
-            // Mode 10: Red Channel Isolation
+            // Mode 010: Red Channel Isolation
             // Keep red channel, zero out green and blue
-            2'b10: begin
+            3'b010: begin
                 pixel_out = {r_in, 4'h0, 4'h0};
             end
 
-            // Mode 11: Thresholding (Binary / Black & White)
+            // Mode 011: Green Channel Isolation
+            // Keep green channel, zero out red and blue
+            3'b011: begin
+                pixel_out = {4'h0, g_in, 4'h0};
+            end
+
+            // Mode 100: Blue Channel Isolation
+            // Keep blue channel, zero out red and green
+            3'b100: begin
+                pixel_out = {4'h0, 4'h0, b_in};
+            end
+
+            // Mode 101: Grayscale conversion
+            // Output luminance on all channels
+            3'b101: begin
+                pixel_out = {luma, luma, luma};
+            end
+
+            // Mode 110: Thresholding (Binary / Black & White)
             // Compare luminance against threshold
             // Output white (0xFFF) if above threshold, black (0x000) if below
-            2'b11: begin
+            3'b110: begin
                 if (luma >= THRESHOLD)
                     pixel_out = 12'hFFF; // White
                 else
                     pixel_out = 12'h000; // Black
             end
 
-            // Default: pass-through (should never reach here)
+            // Default: pass-through
             default: begin
                 pixel_out = pixel_in;
             end

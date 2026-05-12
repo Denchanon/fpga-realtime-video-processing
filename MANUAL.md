@@ -50,15 +50,18 @@ The camera must be connected to the Basys 3 PMOD headers. Based on the project c
     *   The monitor should display a live video feed within 1-2 seconds.
 
 ## 4. Operating Instructions
-The system supports four real-time video modes selected via slide switches **SW[1]** and **SW[0]**.
+The system supports multiple real-time video modes selected via slide switches **SW[2]**, **SW[1]**, and **SW[0]**.
 
-| SW[1] | SW[0] | Mode | Description |
-| :---: | :---: | :--- | :--- |
-| **0** | **0** | **Raw Video** | Original color stream with **Bilinear Upscaling** for smooth edges. |
-| **0** | **1** | **Inversion** | Color negative effect (Digital Inversion). |
-| **1** | **0** | **Red Isolation** | Grayscale except for red channel intensity. |
-| **1** | **1** | **B&W Threshold** | Binary Black & White based on luminance. |
-| **Any** | **Any** | **Smoothing** | Bilinear interpolation is applied to all modes automatically. |
+| SW[2] | SW[1] | SW[0] | Mode | Description |
+| :---: | :---: | :---: | :--- | :--- |
+| **0** | **0** | **0** | **Raw Video** | Original color stream with **Bilinear Upscaling** for smooth edges. |
+| **0** | **0** | **1** | **Inversion** | Color negative effect (Digital Inversion). |
+| **0** | **1** | **0** | **Red Isolation** | Keep only red channel intensity. |
+| **0** | **1** | **1** | **Green Isolation** | Keep only green channel intensity. |
+| **1** | **0** | **0** | **Blue Isolation** | Keep only blue channel intensity. |
+| **1** | **0** | **1** | **Grayscale** | Convert image to grayscale based on luminance. |
+| **1** | **1** | **0** | **B&W Threshold** | Binary Black & White based on luminance. |
+| **Any** | **Any** | **Any** | **Smoothing** | Bilinear interpolation is applied to all modes automatically. |
 
 > [!NOTE]
 > **Extra Credit Feature**: This system uses a dual-bank memory architecture to perform real-time bilinear interpolation. This smooths out the image, effectively removing the blocky pixels usually seen when upscaling 320x240 to 640x480.

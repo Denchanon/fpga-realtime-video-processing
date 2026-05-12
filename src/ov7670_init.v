@@ -140,15 +140,15 @@ module ov7670_init (
                 7'd55: get_reg_entry = {8'h13, 8'hEF}; // COM8: re-enable AGC/AWB (not AEC)
                 7'd56: get_reg_entry = {8'h0E, 8'h61}; // COM5
                 7'd57: get_reg_entry = {8'h0F, 8'h4B}; // COM6
-                7'd58: get_reg_entry = {8'h16, 8'h02}; // Reserved
+                7'd58: get_reg_entry = {8'hB0, 8'h84}; // Color magic (was Reserved)
 
-                // === Color matrix (from reference) ===
-                7'd59: get_reg_entry = {8'h4F, 8'h80}; // MTX1
-                7'd60: get_reg_entry = {8'h50, 8'h80}; // MTX2
+                // === Color matrix (for correct RGB565 colors) ===
+                7'd59: get_reg_entry = {8'h4F, 8'hB3}; // MTX1
+                7'd60: get_reg_entry = {8'h50, 8'hB3}; // MTX2
                 7'd61: get_reg_entry = {8'h51, 8'h00}; // MTX3
-                7'd62: get_reg_entry = {8'h52, 8'h22}; // MTX4
-                7'd63: get_reg_entry = {8'h53, 8'h5E}; // MTX5
-                7'd64: get_reg_entry = {8'h54, 8'h80}; // MTX6
+                7'd62: get_reg_entry = {8'h52, 8'h3D}; // MTX4
+                7'd63: get_reg_entry = {8'h53, 8'hA7}; // MTX5
+                7'd64: get_reg_entry = {8'h54, 8'hE4}; // MTX6
                 7'd65: get_reg_entry = {8'h58, 8'h9E}; // MTXS
 
                 // === AWB (from reference) ===
@@ -156,8 +156,8 @@ module ov7670_init (
                 7'd67: get_reg_entry = {8'h6D, 8'h55}; // AWBCTR2
                 7'd68: get_reg_entry = {8'h6E, 8'h11}; // AWBCTR1
                 7'd69: get_reg_entry = {8'h6F, 8'h9F}; // AWBCTR0
-                7'd70: get_reg_entry = {8'h01, 8'h40}; // BLUE gain
-                7'd71: get_reg_entry = {8'h02, 8'h40}; // RED gain
+                7'd70: get_reg_entry = {8'h01, 8'h96}; // BLUE gain (Boosted to combat green tint)
+                7'd71: get_reg_entry = {8'h02, 8'h8C}; // RED gain (Boosted to combat green tint)
 
                 default: get_reg_entry = {8'hFF, 8'hFF}; // End marker
             endcase
