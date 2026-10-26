@@ -2,7 +2,7 @@
 
 A hardware video pipeline written in **Verilog** for the **Digilent Basys 3 (Artix-7)**. It configures an **OV7670** camera over SCCB, captures frames into on-chip memory, applies real-time image filters, and outputs live video to a **VGA** monitor.
 
-Final project for *Hardware Synthesis Lab I*.
+Final project for *Hardware Synthesis Lab I*, built as a 3-person team with [@Boonnapod](https://github.com/Boonnapod) and [@pat21889](https://github.com/pat21889). We designed, integrated and debugged the system together.
 
 ## Features
 - Automatic camera initialization over **SCCB** (I²C-like protocol), written from scratch
